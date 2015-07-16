@@ -26,12 +26,14 @@ def table2rec(table_file_name):
     fields = fields_str.split("\t")
     fields_num = len(fields)
     line_no = 0
+    #从第二行开始
+    line = fin.readline()
     while line:
         line_no += 1
         if line_no % 1000 == 0:
             print "processing:",line_no,"lines"
         rec_items = []
-        line = fin.readline()
+        #line = fin.readline()
         #record = line.strip()
         items = line.split("\t")
         if len(items) == fields_num:
@@ -39,12 +41,14 @@ def table2rec(table_file_name):
             for i  in range(fields_num):
                 rec_items.append("<"+fields[i]+">="+items[i])
             fout.write("\n".join(rec_items))
+            #print line
             #fout.write("\n")
         else:
-            print line,"length:",len(items),"切分后个数不等于字段个数"
+            print line_no, line,"length:",len(items),"切分后个数不等于字段个数"
             for tmp in items:
                 print tmp
         line = fin.readline()
+    print "completed ",line_no,"lines"
     fout.close()
 
 def rec2table(rec_filename,table_name,max_fields_num=100):
@@ -262,9 +266,7 @@ def copy_and_overwrite(from_path, to_path):
 
     
 if __name__ == "__main__":
-    #d = load_dict("indicator_meta.txt", 0,[2])
-    #merge("hgnd_table.txt", 0, d, "hgnd_unit_table.txt")
-    #print "End!"
+    table2rec("extra_name_unit_data.dat")
     pass
 
     
