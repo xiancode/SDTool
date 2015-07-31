@@ -9,7 +9,7 @@ import string
 import errno
 import shutil
 
-#type = sys.getfilesystemencoding()
+content_type = sys.getfilesystemencoding()
 
 def table2rec(table_file_name):
     '''
@@ -59,7 +59,7 @@ def rec2table(rec_filename,table_name,max_fields_num=100):
     fin    = open(rec_filename)
     line = fin.readline()
     if line.strip() !="<REC>":
-        print "REC文件内容不正确，请检查文件:".decode("utf-8").encode(type),rec_filename
+        print "REC文件内容不正确，请检查文件:".decode("utf-8").encode(content_type),rec_filename
         sys.exit()
     indicators = []
     index_num = 0
@@ -74,12 +74,12 @@ def rec2table(rec_filename,table_name,max_fields_num=100):
         elif  line.strip() == "<REC>":
             break
         if index_num > max_fields_num:
-            print "REC文件的字段超过了最大字段限制,请检查REC文件,或增大max_fields_num参数".decode("utf-8").encode(type)
+            print "REC文件的字段超过了最大字段限制,请检查REC文件,或增大max_fields_num参数".decode("utf-8").encode(content_type)
             break;
     fin.close()
     fout.write("\t".join(indicators)+"\n")
     #
-    print "当前REC文件中指标为:".decode("utf-8").encode(type)
+    print "当前REC文件中指标为:".decode("utf-8").encode(content_type)
     for indicator in indicators:
         print indicator
     # 转化为table
@@ -93,6 +93,8 @@ def rec2table(rec_filename,table_name,max_fields_num=100):
         line_no += 1
         if line.strip() != "<REC>":
             pos = line.find(">=")
+            if pos == -1:
+                continue
             value = line[pos+2:]
             value = value.strip()
             values.append(value) 
@@ -103,8 +105,13 @@ def rec2table(rec_filename,table_name,max_fields_num=100):
                 fout.write("\t".join(values)+"\n")
                 records += 1
             values = []
+    #输出最后一条记录
+    if len(values) == index_num:
+                #输出值
+                fout.write("\t".join(values)+"\n")
+                records += 1
     fout.close()
-    print "转化".decode("utf-8").encode(type),records,"条记录".decode("utf-8").encode(type)
+    print "转化".decode("utf-8").encode(content_type),records,"条记录".decode("utf-8").encode(content_type)
     return table_name
 
 def save_page(url,fname,save_dir):
@@ -266,7 +273,8 @@ def copy_and_overwrite(from_path, to_path):
 
     
 if __name__ == "__main__":
-    table2rec("extra_name_unit_data.dat")
+    #table2rec("extra_name_unit_data.dat")
+    rec2table("jck.txt","jck_table.txt",max_fields_num=100)
     pass
 
     
