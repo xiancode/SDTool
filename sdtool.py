@@ -91,6 +91,8 @@ def rec2table(rec_filename,table_name,max_fields_num=100):
     while line:
         line = fin.readline()
         line_no += 1
+        if line_no % 5000 == 0:
+            print "transform ",line_no,"line"
         if line.strip() != "<REC>":
             pos = line.find(">=")
             if pos == -1:
