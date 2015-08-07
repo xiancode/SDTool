@@ -171,7 +171,7 @@ def load_dict(tdfile,key_col,value_col_list):
             else:
                 tmp_list = []
                 for i in value_col_list:
-                    tmp_list.append(items[i])
+                    tmp_list.append(items[i].strip())
                 result[items[key_col]] = tmp_list
         line = fin.readline()
     fin.close()
