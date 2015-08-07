@@ -8,6 +8,7 @@ import urllib
 import string
 import errno
 import shutil
+import codecs
 
 content_type = sys.getfilesystemencoding()
 
@@ -264,7 +265,7 @@ def get_year_and_month(startyear=2011,startmonth=1,endyear=2015,endmonth=5):
 
 def sorteddict(d):
     '''
-    按照字典中的d排序字典,返回排序后的元组列表
+    按照字典中的k排序字典,返回排序后的元组列表
     '''
     return [(k,d[k]) for k in sorted(d.keys())]
 
@@ -272,7 +273,98 @@ def copy_and_overwrite(from_path, to_path):
     if os.path.exists(to_path):
         shutil.rmtree(to_path)
     shutil.copytree(from_path, to_path)
+    
+def str_q2b(ustring):
+    '''
+    将字符串全角转半角
+    @author: Jasmine
+    '''
+    rstring=""
+    for uchar in ustring:
+        inside_code=ord(uchar)
+        if inside_code == 12288:                              #全角空格直接转换            
+            inside_code = 32 
+        elif (inside_code >= 65281 and inside_code <= 65374): #全角字符（除空格）根据关系转化
+            inside_code -= 65248
 
+        rstring += unichr(inside_code)
+    return rstring
+
+def is_chinese(uchar):
+    '''
+    判断一个unicode是否是汉字
+    @author: Jasmine
+    '''
+    if uchar>=u'\u4e00' and uchar<=u'\u9faf5':
+        return True
+    else:
+        return False
+ 
+def str_has_ch(ustring):
+    flag=False
+    for uchar in ustring:
+        if is_chinese(uchar):
+            flag=True
+            break
+    return flag    
+            
+       
+def file_q2b(file_in):
+    '''
+    把整个文件全角转半角
+    @author: Jasmine
+    '''
+    sufix = os.path.splitext(file_in)[1]
+    fout_name=os.path.splitext(file_in)[0]+'_q2b'+sufix
+    fout=codecs.open(fout_name,'w+','UTF-8')
+    fin=open(file_in,'r') 
+    lines = fin.readlines()
+    for line in lines:
+        line=line.decode('utf8').strip()
+        line = str_q2b(line)
+        fout.writelines(line+'\n')
+    fin.close()    
+    fout.close()   
+    return fout_name
+
+def file_merge(file_in):
+    '''
+    对rec文件进行多行合并，把没有‘=’的行合并到上一行
+    @author: Jasmine
+    '''
+    sufix = os.path.splitext(file_in)[1] 
+    fout_name=os.path.splitext(file_in)[0]+'_merge'+sufix
+    finf_name=os.path.splitext(file_in)[0]+'_merge_info'+sufix
+    #读取待处理文件test1.txt
+    fin=open(file_in,'r') 
+    lines = fin.readlines()
+    #建立处理后文件
+    fout=codecs.open(fout_name,'w+','UTF-8')
+    #建立抛出文件
+    finf=codecs.open(finf_name,'w+','UTF-8')
+    #定义参数
+#     lineTemp=u''   
+#     numFlag=0
+    lines2=[]
+    
+    for i in range(0,len(lines)):
+        line=lines[i].strip()
+        if line=='<REC>' or line.find('=')!=-1:
+            lines2.append(line+'\n')
+            continue
+        else:
+            lineStr= lines2[len(lines2)-1].strip()+' '+lines[i].strip()+'\n'
+            lines2[len(lines2)-1]=lineStr
+            finf.write('line'+str(i+1)+':'+lines[i].decode('utf8'))        
+    for line in lines2:
+        #去除空格
+        line=line.replace(' ','')
+        fout.writelines(line.decode('utf8'))
+    
+    fin.close()
+    fout.close()
+    finf.close()
+    return fout_name
     
 if __name__ == "__main__":
     #table2rec("extra_name_unit_data.dat")
