@@ -365,6 +365,17 @@ def file_merge(file_in):
     fout.close()
     finf.close()
     return fout_name
+
+def get_file_from_dir(dirname):
+    '''
+    返回目录下的文件名
+    相对路径
+    '''
+    file_list = []
+    for root,dirs,filenames in os.walk(dirname):
+        for filename in filenames:
+            file_list.append(os.path.join(root,filename))
+    return file_list
     
 if __name__ == "__main__":
     #table2rec("extra_name_unit_data.dat")
