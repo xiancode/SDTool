@@ -12,13 +12,14 @@ import codecs
 
 content_type = sys.getfilesystemencoding()
 
-def table2rec(table_file_name):
+def table2rec(table_file_name,rec_file_name=None):
     '''
     table文件转化为rec，第一行为字段名
     '''
     sufix = os.path.splitext(table_file_name)[1]
     pos = table_file_name.find(sufix)
-    rec_file_name = table_file_name[:pos]+"_REC"+sufix
+    if not rec_file_name:
+        rec_file_name = table_file_name[:pos]+"_REC"+sufix
     fout = open(rec_file_name,"w")
     
     fin = open(table_file_name)
@@ -31,7 +32,7 @@ def table2rec(table_file_name):
     line = fin.readline()
     while line:
         line_no += 1
-        if line_no % 1000 == 0:
+        if line_no % 5000 == 0:
             print "processing:",line_no,"lines"
         rec_items = []
         #line = fin.readline()
