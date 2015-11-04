@@ -377,6 +377,33 @@ def get_file_from_dir(dirname):
         for filename in filenames:
             file_list.append(os.path.join(root,filename))
     return file_list
+
+def U8_GBK(sourceFileName,targetFileName):
+    '''
+    
+    '''
+    BLOCKSIZE = 1048576 # or some other, desired size in bytes
+    with codecs.open(sourceFileName, "r", "utf-8") as sourceFile:
+        with codecs.open(targetFileName, "w", "gbk") as targetFile:
+            while True:
+                contents = sourceFile.read(BLOCKSIZE)
+                if not contents:
+                    break
+                targetFile.write(contents)
+                
+            
+def GBK_U8(sourceFileName,targetFileName):
+    '''
+    
+    '''
+    BLOCKSIZE = 1048576 # or some other, desired size in bytes
+    with codecs.open(sourceFileName, "r", "gbk") as sourceFile:
+        with codecs.open(targetFileName, "w", "utf-8") as targetFile:
+            while True:
+                contents = sourceFile.read(BLOCKSIZE)
+                if not contents:
+                    break
+                targetFile.write(contents)
     
 if __name__ == "__main__":
     #table2rec("extra_name_unit_data.dat")
