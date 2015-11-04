@@ -133,19 +133,24 @@ def save_page(url,fname,save_dir):
     except Exception,e:
         print url,fname,e
 
-def load_list(fname):
+def load_list(fname,header=False):
     '''
     载入列表,每行为列表的一个元素
+    header : 第一行是否为标题
     '''
+    count = 0
     result = []
     with open(fname) as f:
         lines = f.readlines()
         for line in lines:
+            count += 1
+            if header and count == 1:
+                continue
             result.append(line.strip())
     return result
 
 
-def load_dict(tdfile,key_col,value_col_list):
+def load_dict(tdfile,key_col,value_col_list,header=False):
     """
     根据文件和列来构造dict数据结构
     :params tdfile: 纯文本 表格样式的文件,列之间用"\t"分割 
@@ -154,6 +159,8 @@ def load_dict(tdfile,key_col,value_col_list):
     """
     result = {}
     fin = open(tdfile)
+    if header:
+        line = fin.readline()
     line_no = 0
     line = fin.readline()
     if len(line.split("\t"))-1 < value_col_list[-1] or len(line.split("\t"))-1 < key_col :
